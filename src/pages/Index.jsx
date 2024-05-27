@@ -1,20 +1,35 @@
-import { Box, Container, Flex, Heading, Text, VStack, HStack, Link, Spacer, Divider } from "@chakra-ui/react";
+import { useState } from "react";
+import { Box, Container, Flex, Heading, Text, VStack, HStack, Link, Spacer, Divider, Button, FormControl, FormLabel, Input, Textarea } from "@chakra-ui/react";
 import { FaTwitter, FaFacebook, FaInstagram } from "react-icons/fa";
 
-const posts = [
-  {
-    title: "First Blog Post",
-    date: "October 1, 2023",
-    excerpt: "This is a short excerpt of the first blog post.",
-  },
-  {
-    title: "Second Blog Post",
-    date: "October 2, 2023",
-    excerpt: "This is a short excerpt of the second blog post.",
-  },
-];
-
 const Index = () => {
+  const [posts, setPosts] = useState([
+    {
+      title: "First Blog Post",
+      date: "October 1, 2023",
+      excerpt: "This is a short excerpt of the first blog post.",
+    },
+    {
+      title: "Second Blog Post",
+      date: "October 2, 2023",
+      excerpt: "This is a short excerpt of the second blog post.",
+    },
+  ]);
+  const [showForm, setShowForm] = useState(false);
+  const [newPost, setNewPost] = useState({ title: "", date: "", excerpt: "" });
+
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+    setPosts([...posts, newPost]);
+    setNewPost({ title: "", date: "", excerpt: "" });
+    setShowForm(false);
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewPost({ ...newPost, [name]: value });
+  };
+
   return (
     <Container maxW="container.xl" p={4}>
       {/* Navigation Bar */}
@@ -25,8 +40,32 @@ const Index = () => {
           <Link href="#">Home</Link>
           <Link href="#">About</Link>
           <Link href="#">Contact</Link>
+          <Button onClick={() => setShowForm(!showForm)}>
+            {showForm ? "Cancel" : "Add New Post"}
+          </Button>
         </HStack>
       </Flex>
+
+      {/* Form for adding new post */}
+      {showForm && (
+        <Box as="form" onSubmit={handleFormSubmit} mb={8} p={4} borderWidth="1px" borderRadius="md" boxShadow="md">
+          <VStack spacing={4}>
+            <FormControl isRequired>
+              <FormLabel>Title</FormLabel>
+              <Input name="title" value={newPost.title} onChange={handleInputChange} />
+            </FormControl>
+            <FormControl isRequired>
+              <FormLabel>Date</FormLabel>
+              <Input name="date" value={newPost.date} onChange={handleInputChange} />
+            </FormControl>
+            <FormControl isRequired>
+              <FormLabel>Content</FormLabel>
+              <Textarea name="excerpt" value={newPost.excerpt} onChange={handleInputChange} />
+            </FormControl>
+            <Button type="submit" colorScheme="blue">Add Post</Button>
+          </VStack>
+        </Box>
+      )}
 
       {/* Main Content */}
       <Flex direction={{ base: "column", md: "row" }} align="start">
